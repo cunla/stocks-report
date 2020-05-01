@@ -2,6 +2,7 @@ import pandas as pd
 import pandas_datareader as pdr
 from datetime import datetime, timedelta
 
+
 def get_data(symbols, start_date, end_date):
     dates = pd.date_range(start_date, end_date)
     df = pd.DataFrame(index=dates)
@@ -22,15 +23,16 @@ def rolling_bands(df_stocks: pd.DataFrame, **kwargs):
     rolling_bands_df = pd.DataFrame()
     rolling_bands_df['Upper'] = rolling_mean_portfolio + (rolling_std_portfolio * 2)
     rolling_bands_df['Lower'] = rolling_mean_portfolio - (rolling_std_portfolio * 2)
-    rolling_bands_df['Actual'] = df_stocks[column_name]
+    rolling_bands_df[column_name] = df_stocks[column_name]
 
     return rolling_bands_df
 
 
 if __name__ == '__main__':
-    stock_name = 'AAPL'
+    stock_name = 'AMZN'
     end_date = datetime.today().strftime('%Y-%m-%d')
     start_date = datetime.today() - timedelta(days=90)
     start_date = start_date.strftime('%Y-%m-%d')
     df = get_data([stock_name], start_date, end_date)
     rolling_bands_df = rolling_bands(df, column_name=stock_name)
+    rolling_bands_df.to_csv('stocks.csv')

@@ -60,4 +60,4 @@ def update_db(df: pd.DataFrame, **kwargs):
 
 if __name__ == '__main__':
     df = generate_report_from_csv('stocks.csv')
-    update_db(df, columns=['AAPL'])
+    update_db(df, columns=['AMZN'])

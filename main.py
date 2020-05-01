@@ -1,10 +1,12 @@
 import tempfile
+from datetime import datetime, timedelta
 from typing import Tuple
 
 import jinja2
 import os
 
 import settings
+from analytics import get_data, rolling_bands
 from emails import EmailSender
 from generate_graph import dataframe_to_image, generate_report_from_csv_str
 
@@ -44,7 +46,24 @@ def send_report(content: str, to: Tuple[str, str], **kwargs):
     os.remove(TMP_FILENAME)
 
 
+def generate_report(stock: str, to_address: Tuple[str, str], **kwargs):
+    end_date = kwargs.get('end_date', datetime.today().strftime('%Y-%m-%d'))
+    start_date = datetime.today() - timedelta(days=90)
+    start_date = start_date.strftime('%Y-%m-%d')
+    start_date = kwargs.get('start_date', start_date)
+
+    df = get_data([stock], start_date, end_date)
+    rolling_bands_df = rolling_bands(df, column_name=stock)
+    title = f'{stock} report {start_date}-{end_date}'
+    dataframe_to_image(rolling_bands_df, TMP_FILENAME,
+                       graph_title=title,
+                       colors={stock: 'blue', 'Lower': 'red', 'Upper': 'red'})
+    html = generate_report_html(title=title)
+    send_report(html, to_address, subject=title)
+
+
 if __name__ == '__main__':
-    html = generate_report_html(title='Stocks report')
-    send_report(html, settings.REPORT_RECIPIENT,
-                subject='Stocks report')
+    # html = generate_report_html(title='Stocks report')
+    # send_report(html, settings.REPORT_RECIPIENT,
+    #             subject='Stocks report')
+    generate_report('AMZN', settings.REPORT_RECIPIENT)
