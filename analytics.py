@@ -1,18 +1,7 @@
 import pandas as pd
-import pandas_datareader as pdr
 from datetime import datetime, timedelta
 
-
-def get_data(symbols, start_date, end_date):
-    dates = pd.date_range(start_date, end_date)
-    df = pd.DataFrame(index=dates)
-    for symbol in symbols:
-        df1 = pdr.get_data_yahoo(symbol, start=start_date, end=end_date)
-        df1 = df1[['Adj Close']]
-        df1 = df1.rename(columns={'Adj Close': symbol})
-        df = df.join(df1)
-    df.dropna(inplace=True)
-    return df
+from db_model import get_data
 
 
 def rolling_bands(df_stocks: pd.DataFrame, **kwargs):
