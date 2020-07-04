@@ -1,6 +1,7 @@
 import tempfile
 from datetime import datetime, timedelta
-from typing import Tuple
+from typing import Tuple, List
+import numpy as np
 
 import jinja2
 import os
@@ -14,13 +15,17 @@ TEMP_DIR = tempfile.gettempdir()
 TMP_FILENAME = os.path.join(TEMP_DIR, 'graph.png')
 
 
-def generate_report_html(**kwargs):
+def generate_report_html(start_date, end_date, **kwargs):
     title = kwargs.get('title', settings.REPORT_SUBJECT)
+    portfolio = kwargs.get('portfolio', None)
     template_loader = jinja2.FileSystemLoader(searchpath="./")
     template_env = jinja2.Environment(loader=template_loader)
     html_template = template_env.get_template(settings.REPORT_TEMPLATE)
     html = html_template.render(
-        title=title
+        title=title,
+        portfolio=portfolio,
+        start_date=start_date,
+        end_date=end_date,
     )
     return html
 
@@ -46,19 +51,48 @@ def send_report(content: str, to: Tuple[str, str], **kwargs):
     os.remove(TMP_FILENAME)
 
 
-def generate_report(stock: str, to_address: Tuple[str, str], **kwargs):
+def generate_stock_report(stock: str, to_address: Tuple[str, str], **kwargs):
     end_date = kwargs.get('end_date', datetime.today().strftime('%Y-%m-%d'))
     start_date = datetime.today() - timedelta(days=90)
     start_date = start_date.strftime('%Y-%m-%d')
     start_date = kwargs.get('start_date', start_date)
 
     df = get_data([stock], start_date, end_date)
+    df.dropna(inplace=True)
     rolling_bands_df = rolling_bands(df, column_name=stock)
     title = f'{stock} report {start_date}-{end_date}'
     dataframe_to_image(rolling_bands_df, TMP_FILENAME,
                        graph_title=title,
                        colors={stock: 'blue', 'Lower': 'red', 'Upper': 'red'})
-    html = generate_report_html(title=title)
+    html = generate_report_html(title=title,
+                                start_date=start_date,
+                                end_date=end_date)
+    send_report(html, to_address, subject=title)
+
+
+def generate_portfolio_report(portfolio: List[Tuple[float, str]],
+                              to_address: Tuple[str, str],
+                              **kwargs):
+    end_date = kwargs.get('end_date', datetime.today().strftime('%Y-%m-%d'))
+    start_date = datetime.today() - timedelta(days=90)
+    start_date = start_date.strftime('%Y-%m-%d')
+    start_date = kwargs.get('start_date', start_date)
+
+    stocks = [item[1] for item in portfolio]
+    percentage = np.array([item[0] for item in portfolio])
+    df = get_data(stocks, start_date, end_date)
+    df.dropna(inplace=True)
+    df['portfolio'] = df.values.dot(percentage)
+    rolling_bands_df = rolling_bands(df, column_name='portfolio')
+    portfolio_str = ' +'.join(f'{item[0] * 100}%*{item[1]}' for item in portfolio)
+    title = f'Portfolio report {start_date}-{end_date}'
+    dataframe_to_image(rolling_bands_df, TMP_FILENAME,
+                       graph_title=title,
+                       colors={'portfolio': 'blue', 'Lower': 'red', 'Upper': 'red'})
+    html = generate_report_html(title=title,
+                                start_date=start_date,
+                                end_date=end_date,
+                                portfolio=portfolio,)
     send_report(html, to_address, subject=title)
 
 
@@ -66,4 +100,10 @@ if __name__ == '__main__':
     # html = generate_report_html(title='Stocks report')
     # send_report(html, settings.REPORT_RECIPIENT,
     #             subject='Stocks report')
-    generate_report('AMZN', settings.REPORT_RECIPIENT)
+    # generate_stock_report('AMZN', settings.REPORT_RECIPIENT)
+    portfolio = [(0.25, 'AMZN'),
+                 (0.25, 'AAPL'),
+                 (0.25, 'GOOG'),
+                 (0.25, 'FB'),
+                 ]
+    generate_portfolio_report(portfolio, settings.REPORT_RECIPIENT)

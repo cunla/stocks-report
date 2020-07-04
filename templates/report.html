@@ -1,12 +1,26 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>{{title}}</title>
     <style type="text/css" media="screen">
 
     </style>
 </head>
 <body>
 <div>
+    <h3>{{ title }}</h3>
+    {% if portfolio %}
+    <table>
+        <thead>
+        <td>Percentage</td>
+        <td>Stock</td>
+        </thead>
+        {% for item in portfolio %}
+        <tr>
+            <td>{{item[0]*100}}%</td>
+            <td>{{item[1]}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
     <details>
         <img src="cid:0"/>
     </details>

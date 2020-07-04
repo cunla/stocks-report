@@ -111,6 +111,7 @@ def get_data(symbols: List[str], start_date_str: str, end_date_str: str) -> pd.D
     if pdr_needed:
         df = _get_pdr_data(symbols, start_date_str, end_date_str)
         # TODO update DB
+        update_db(df, columns=symbols)
         session.commit()
     session.close()
     return df
