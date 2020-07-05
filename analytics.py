@@ -9,7 +9,7 @@ def rolling_bands(df_stocks: pd.DataFrame, **kwargs):
     rolling_mean_portfolio = df_stocks[column_name].rolling(20).mean()
     rolling_std_portfolio = df_stocks[column_name].rolling(20).std()
 
-    rolling_bands_df = pd.DataFrame()
+    rolling_bands_df = df_stocks
     rolling_bands_df['Upper'] = rolling_mean_portfolio + (rolling_std_portfolio * 2)
     rolling_bands_df['Lower'] = rolling_mean_portfolio - (rolling_std_portfolio * 2)
     rolling_bands_df[column_name] = df_stocks[column_name]

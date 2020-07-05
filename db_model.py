@@ -106,7 +106,7 @@ def get_data(symbols: List[str], start_date_str: str, end_date_str: str) -> pd.D
         if df_curr.index.max() < end_date:
             pdr_needed = True
             break
-        df.join(df_curr)
+        df = df.join(df_curr)
 
     if pdr_needed:
         df = _get_pdr_data(symbols, start_date_str, end_date_str)
