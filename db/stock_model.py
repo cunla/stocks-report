@@ -1,7 +1,6 @@
 
-from sqlalchemy import Column, Integer, String, Numeric, Date, func
-import pandas as pd
-from db.base import Base, engine, Session
+from sqlalchemy import Column, Integer, String, Numeric, Date
+from db.base import Base, engine
 
 
 class Stock(Base):
