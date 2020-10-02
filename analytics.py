@@ -19,9 +19,9 @@ def rolling_bands(df_stocks: pd.DataFrame, **kwargs):
 
 if __name__ == '__main__':
     stock_name = 'AMZN'
-    end_date = datetime.today().strftime('%Y-%m-%d')
-    start_date = datetime.today() - timedelta(days=90)
-    start_date = start_date.strftime('%Y-%m-%d')
-    df = get_data([stock_name], start_date, end_date)
+    end_date = datetime.today().date()
+    start_date = end_date - timedelta(days=90)
+    start_date = start_date
+    df = get_data({stock_name}, start_date, end_date)
     rolling_bands_df = rolling_bands(df, column_name=stock_name)
     rolling_bands_df.to_csv('stocks.csv')

@@ -1,12 +1,10 @@
 from datetime import datetime, date
-from operator import and_
-from typing import List
+from typing import Set
 
 import pandas_datareader as pdr
 from sqlalchemy import Column, Integer, String, Numeric, Date, func
 import pandas as pd
 from db.base import Base, engine, Session
-from generate_graph import generate_report_from_csv
 
 
 class Stock(Base):
@@ -46,7 +44,8 @@ def update_db(df: pd.DataFrame, **kwargs):
     columns = kwargs.get('columns', df.columns)
     for index, row in df.iterrows():
         for col in columns:
-            stock_value = StockValue(col, index, row[col])
+            val = row[col] if isinstance(row[col], float) else row[col][0]
+            stock_value = StockValue(col, index, val)
             session.add(stock_value)
     session.commit()
     symbols_min_max = session \
@@ -64,7 +63,7 @@ def update_db(df: pd.DataFrame, **kwargs):
     session.close()
 
 
-def _get_pdr_data(symbols: List[str], start_date: str, end_date: str) -> pd.DataFrame:
+def _get_pdr_data(symbols: Set[str], start_date: date, end_date: date) -> pd.DataFrame:
     """
     gets data from pandas reader
     :param symbols: symbols to get data for
@@ -103,7 +102,7 @@ def convert_to_date(x) -> date:
     raise ValueError("Can't convert to date")
 
 
-def get_data(symbols: List[str],
+def get_data(symbols: Set[str],
              start_date: date,
              end_date: date) -> pd.DataFrame:
     session = Session()
@@ -115,10 +114,10 @@ def get_data(symbols: List[str],
     # try with DB data
     for symbol in symbols:
         df_curr = _get_db_data(symbol, start_date, end_date, session=session)
-        if df_curr.index.max() < end_date:
+        if len(df_curr) == 0 or df_curr.index.max() < end_date:
             pdr_needed = True
             break
-        df = df.join(df_curr)
+        df = df.join(df_curr, how='left')
 
     if pdr_needed:
         df = _get_pdr_data(symbols, start_date, end_date)

@@ -1,0 +1,30 @@
+POST http://localhost:5000/portfolio-report
+Content-Type: application/json
+
+{
+  "startDate": "2020-01-01",
+  "endDate": "2020-10-01",
+  "portfolio": [
+  {
+    "percentage": 0.2,
+    "symbol": "FB"
+  },
+  {
+    "percentage": 0.2,
+    "symbol": "AMZN"
+  },
+  {
+    "percentage": 0.2,
+    "symbol": "GOOG"
+  },
+  {
+    "percentage": 0.2,
+    "symbol": "AAPL"
+  },
+  {
+    "percentage": 0.2,
+    "symbol": "TSLA"
+  }
+]
+}
+###

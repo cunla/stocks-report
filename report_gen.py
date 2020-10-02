@@ -1,5 +1,5 @@
 import tempfile
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from typing import Tuple, List
 import numpy as np
 import pandas as pd
@@ -58,7 +58,7 @@ def generate_stock_report(stock: str, to_address: Tuple[str, str], **kwargs):
     start_date = start_date.strftime('%Y-%m-%d')
     start_date = kwargs.get('start_date', start_date)
 
-    df = get_data([stock], start_date, end_date)
+    df = get_data({stock}, start_date, end_date)
     df.dropna(inplace=True)
     rolling_bands_df = rolling_bands(df, column_name=stock)
     title = f'{stock} report {start_date}-{end_date}'
@@ -72,14 +72,25 @@ def generate_stock_report(stock: str, to_address: Tuple[str, str], **kwargs):
 
 
 def generate_portfolio_report(portfolio: List[Tuple[float, str]],
-                              start_date: datetime,
-                              end_date: datetime) -> pd.DataFrame:
-    stocks = [item[1] for item in portfolio]
+                              start_date: date,
+                              end_date: date) -> pd.DataFrame:
+    stocks = set(item[1] for item in portfolio)
     percentage = np.array([item[0] for item in portfolio])
-    res_df = get_data(stocks, start_date, end_date)
-    res_df.dropna(inplace=True)
-    res_df['portfolio'] = res_df.values.dot(percentage)
-    return res_df
+    portfolio_df = get_data(stocks, start_date, end_date)
+    portfolio_df.dropna(inplace=True)
+    portfolio_df['portfolio'] = portfolio_df.values.dot(percentage)
+    rolling_bands_df = rolling_bands(portfolio_df, column_name='portfolio')
+    return rolling_bands_df
+
+
+def generate_portfolio_report_csv(portfolio: List[Tuple[float, str]],
+                                  start_date: date,
+                                  end_date: date,
+                                  columns: List[str] = None) -> str:
+    res_df = generate_portfolio_report(portfolio, start_date, end_date)
+    if columns is not None:
+        res_df = res_df[columns]
+    return res_df.to_csv(float_format='%.2f')
 
 
 def send_portfolio_report(portfolio: List[Tuple[float, str]],
@@ -90,10 +101,9 @@ def send_portfolio_report(portfolio: List[Tuple[float, str]],
     start_date = start_date.strftime('%Y-%m-%d')
     start_date = kwargs.get('start_date', start_date)
 
-    portfolio_df = generate_portfolio_report(portfolio,
-                                             start_date=start_date,
-                                             end_date=end_date)
-    rolling_bands_df = rolling_bands(portfolio_df, column_name='portfolio')
+    rolling_bands_df = generate_portfolio_report(portfolio,
+                                                 start_date=start_date,
+                                                 end_date=end_date)
     portfolio_str = ' +'.join(f'{item[0] * 100}%*{item[1]}' for item in portfolio)
     title = f'Portfolio report {start_date}-{end_date}'
     dataframe_to_image(rolling_bands_df, TMP_FILENAME,
@@ -121,5 +131,6 @@ if __name__ == '__main__':
     start_date = end_date - timedelta(days=90)
     start_date = start_date
 
-    df = generate_portfolio_report(portfolio, start_date, end_date)
-    print(df)
+    csv = generate_portfolio_report_csv(portfolio, start_date, end_date,
+                                        columns=['portfolio', 'Upper', 'Lower'])
+    print(csv)
