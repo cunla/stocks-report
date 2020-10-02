@@ -5,8 +5,7 @@ import pandas_datareader as pdr
 import pandas as pd
 from sqlalchemy import func
 
-from db.base import Session
-from db.stock_model import StockValue, Stock
+from db import Session, StockValue, Stock
 
 
 def update_db(df: pd.DataFrame, **kwargs):

@@ -58,5 +58,11 @@ def get_all_symbols():
     return res
 
 
+@app.route('/api/portfolios', methods=['POST'])
+def portfolio_create():
+    req_data = request.get_json()
+    # TODO implement
+
+
 if __name__ == '__main__':
     app.run(debug=True)

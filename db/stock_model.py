@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Numeric, Date, UniqueConstraint
-from db.base import Base, engine
+from db import Base
 
 
 class Stock(Base):
@@ -30,6 +30,3 @@ class StockValue(Base):
 
     def __str__(self):
         return f'{self.date} - {self.symbol} - {self.adj_close}'
-
-
-Base.metadata.create_all(engine)
