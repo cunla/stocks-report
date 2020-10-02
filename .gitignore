@@ -132,3 +132,4 @@ graph.png
 stocks.csv
 secrets.py
 db.sqlite
+web/symbols.json

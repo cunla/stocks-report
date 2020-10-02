@@ -1,7 +1,7 @@
 import pandas as pd
 from datetime import datetime, timedelta
 
-from db_model import get_data
+from data import get_data
 
 
 def rolling_bands(df_stocks: pd.DataFrame, **kwargs):

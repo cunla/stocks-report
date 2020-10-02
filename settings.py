@@ -19,4 +19,4 @@ REPORT_SUBJECT = 'Report on stocks:'
 REPORT_RECIPIENT = ("Daniel", "style.daniel@gmail.com")
 
 # Report template
-REPORT_TEMPLATE = 'templates/report.html'
+REPORT_TEMPLATE = 'templates/email_report.html'

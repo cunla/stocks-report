@@ -1,14 +1,19 @@
+import json
+import os
+import time
 from datetime import datetime, timedelta
-
 from flask import Flask, request, abort
 from report_gen import generate_portfolio_report_csv
-
-app = Flask(__name__)
+import pandas_datareader as pdr
 
 DATE_FORMAT = '%Y-%m-%d'
 
+app = Flask(__name__,
+            static_url_path='',
+            static_folder='web')
 
-@app.route('/portfolio-report', methods=['POST'])
+
+@app.route('/api/portfolio-report', methods=['POST'])
 def generate_portfolio():
     req_data = request.get_json()
     portfolio = [(item['percentage'], item['symbol'].upper()) for item in req_data['portfolio']]
@@ -31,6 +36,26 @@ def generate_portfolio():
         'endDate': end_date.strftime(DATE_FORMAT),
         'csv': results
     }
+
+
+@app.route('/api/symbols', methods=['GET'])
+def get_all_symbols():
+    PATH = 'web/symbols.json'
+    last_good_date = datetime.now() - timedelta(days=1)
+    if not os.path.exists(PATH) \
+            or datetime.fromtimestamp(os.path.getmtime(PATH)) < last_good_date:
+        df = pdr.get_nasdaq_symbols()
+        df = df['Security Name']
+        df.to_json(path_or_buf=PATH)
+    all_symbols = json.load(open(PATH, 'r'))
+    query = request.args.get('q')
+    if query is None or len(query) < 2:
+        abort(404, 'At least 3 letters query required')
+    query = query.lower()
+    res = {k: all_symbols[k]
+           for k in all_symbols
+           if query in k.lower() or query in all_symbols[k].lower()}
+    return res
 
 
 if __name__ == '__main__':
