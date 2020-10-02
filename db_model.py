@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from operator import and_
 from typing import List
 
@@ -93,11 +93,23 @@ def _get_db_data(symbol: str, start_date: datetime.date, end_date: datetime.date
     return df
 
 
-def get_data(symbols: List[str], start_date_str: str, end_date_str: str) -> pd.DataFrame:
+def convert_to_date(x) -> date:
+    if isinstance(x, str):
+        return datetime.strptime(x, '%Y-%m-%d').date()
+    if isinstance(x, datetime):
+        return x.date()
+    if isinstance(x, date):
+        return x
+    raise ValueError("Can't convert to date")
+
+
+def get_data(symbols: List[str],
+             start_date: date,
+             end_date: date) -> pd.DataFrame:
     session = Session()
     pdr_needed = False
-    start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
-    end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+    start_date = convert_to_date(start_date)
+    end_date = convert_to_date(end_date)
     dates = pd.date_range(start_date, end_date)
     df = pd.DataFrame(index=dates)
     # try with DB data
@@ -109,7 +121,7 @@ def get_data(symbols: List[str], start_date_str: str, end_date_str: str) -> pd.D
         df = df.join(df_curr)
 
     if pdr_needed:
-        df = _get_pdr_data(symbols, start_date_str, end_date_str)
+        df = _get_pdr_data(symbols, start_date, end_date)
         # TODO update DB
         update_db(df, columns=symbols)
         session.commit()
