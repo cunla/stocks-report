@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from flask import Flask, request
+from flask import Flask, request, abort
 from report_gen import generate_portfolio_report_csv
 
 app = Flask(__name__)
@@ -9,9 +9,15 @@ DATE_FORMAT = '%Y-%m-%d'
 
 
 @app.route('/portfolio-report', methods=['POST'])
-def hello_world():
+def generate_portfolio():
     req_data = request.get_json()
-    portfolio = [(item['percentage'], item['symbol']) for item in req_data['portfolio']]
+    portfolio = [(item['percentage'], item['symbol'].upper()) for item in req_data['portfolio']]
+    symbols = [item[1] for item in portfolio]
+    if len(set(symbols)) != len(symbols):
+        abort(400, 'Portfolio has same symbol multiple times')
+    portfolio_sum = sum(item[0] for item in portfolio)
+    if portfolio_sum != 1.0:
+        abort(400, 'Portfolio percentage do not sum to 100%')
     end_date = datetime.today().date()
     if 'endDate' in req_data:
         end_date = datetime.strptime(req_data['endDate'], DATE_FORMAT).date()
