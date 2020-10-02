@@ -1,5 +1,4 @@
-
-from sqlalchemy import Column, Integer, String, Numeric, Date
+from sqlalchemy import Column, Integer, String, Numeric, Date, UniqueConstraint
 from db.base import Base, engine
 
 
@@ -22,6 +21,7 @@ class StockValue(Base):
     symbol = Column('symbol', String(32))
     date = Column('date', Date)
     adj_close = Column('adj_close', Numeric)
+    __table_args__ = (UniqueConstraint('symbol', 'date', name='_symbol_date_uc'),)
 
     def __init__(self, symbol, date, val):
         self.symbol = symbol
@@ -33,4 +33,3 @@ class StockValue(Base):
 
 
 Base.metadata.create_all(engine)
-

@@ -1,4 +1,4 @@
-POST http://localhost:5000/portfolio-report
+POST http://localhost:5000/api/portfolio-report
 Content-Type: application/json
 
 {

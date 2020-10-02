@@ -14,8 +14,7 @@ def update_db(df: pd.DataFrame, **kwargs):
     columns = kwargs.get('columns', df.columns)
     for index, row in df.iterrows():
         for col in columns:
-            val = row[col] if isinstance(row[col], float) else row[col][0]
-            stock_value = StockValue(col, index, val)
+            stock_value = StockValue(col, index, row[col])
             session.add(stock_value)
     session.commit()
     symbols_min_max = session \
