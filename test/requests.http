@@ -29,4 +29,19 @@ Content-Type: application/json
 }
 ###
 
-GET http://localhost:5000/api/symbols
+GET http://localhost:5000/api/symbols?q=hsbc
+
+###
+GET http://localhost:5000/api/portfolios/1
+
+###
+GET http://localhost:5000/api/portfolios?q=
+
+###
+POST http://localhost:5000/api/portfolios
+Content-Type: application/json
+
+{
+  "name": "first",
+  "mix": "{\"FB\": 0.2, \"AMZN\": 0.2,\"GOOG\": 0.2,\"AAPL\": 0.2,\"TSLA\": 0.2}"
+}

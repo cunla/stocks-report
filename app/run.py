@@ -1,8 +1,11 @@
 import json
 import os
-import time
 from datetime import datetime, timedelta
+from typing import Dict
+
 from flask import Flask, request, abort
+
+from db import Portfolio
 from report_gen import generate_portfolio_report_csv
 import pandas_datareader as pdr
 
@@ -40,7 +43,7 @@ def generate_portfolio():
 
 @app.route('/api/symbols', methods=['GET'])
 def get_all_symbols():
-    PATH = 'web/symbols.json'
+    PATH = '../web/symbols.json'
     last_good_date = datetime.now() - timedelta(days=1)
     if not os.path.exists(PATH) \
             or datetime.fromtimestamp(os.path.getmtime(PATH)) < last_good_date:
@@ -58,10 +61,30 @@ def get_all_symbols():
     return res
 
 
+def _portfolio_validate(json: Dict):
+    pass
+
+
 @app.route('/api/portfolios', methods=['POST'])
 def portfolio_create():
     req_data = request.get_json()
-    # TODO implement
+    _portfolio_validate(req_data)
+    portfolio = Portfolio.create(req_data['name'], req_data['mix'])
+    return portfolio.to_json()
+
+
+@app.route('/api/portfolios/<int:p_id>', methods=['GET'])
+def portfolio_detail(p_id: int):
+    portfolio = Portfolio.get(p_id)
+    return portfolio.to_json()
+
+
+@app.route('/api/portfolios', methods=['GET'])
+def portfolio_list():
+    query = request.args.get('q') or ''
+    portfolios = Portfolio.list(query)
+    res = {'results': [p.to_json() for p in portfolios]}
+    return res
 
 
 if __name__ == '__main__':
