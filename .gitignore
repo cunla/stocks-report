@@ -133,4 +133,3 @@ stocks.csv
 secrets.py
 db.sqlite
 web/symbols.json
-.idea
