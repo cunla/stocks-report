@@ -1,14 +1,15 @@
 import os
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 from typing import Tuple, List
-
 import jinja2
-
+import argparse
+import logging
 import analytics
-# from analytics import get_data, rolling_bands
 import settings
 from emails import EmailSender
 from generate_graph import dataframe_to_image
+
+logger = logging.getLogger(__name__)
 
 BUY_VALUE = 0.05  # 5% of lower bound or lower
 SELL_VALUE = 0.05  # 5% below upper bound or higher
@@ -91,5 +92,17 @@ def generate_stock_report(stocks: List[str], **kwargs):
         os.remove(item)
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description='Stocks tracking report')
+    parser.add_argument('-s', '--stocks', dest='stocks', nargs='+',
+                        required=True,
+                        help='Stocks to track')
+    res = parser.parse_args()
+    logger.debug(f'args {res}')
+    return res
+
+
 if __name__ == '__main__':
-    generate_stock_report(['TSLA', 'AMZN', 'HSBC'])
+    args = parse_args()
+    stocks = [i.upper() for i in args.stocks]
+    generate_stock_report(stocks)
