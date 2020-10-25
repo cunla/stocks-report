@@ -1,0 +1,16 @@
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css" media="screen">
+
+    </style>
+</head>
+<body>
+<div>
+    {% for item in portfolio %}
+        <h3>{{ item.title }} <b style="color:{{item.order_color}}">{{item.order}}</b></h3>
+        <details>
+            <img src="cid:{{item.attachment_number}}" width="400"/>
+        </details>
+    {% endfor %}
+</div>
+</body>

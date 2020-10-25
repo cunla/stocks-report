@@ -25,11 +25,6 @@ def dataframe_to_image(df: pd.DataFrame, image_filename: str, **kwargs) -> None:
         ax2.get_xaxis().tick_bottom()
         ax2.tick_params(axis='y', labelcolor=default_style.get('color'))
         ax2.get_yaxis().tick_right()
-    y_min = int(min(df.min().values * 0.98))
-    y_max = int(max(df.max().values * 1.02))
-    # y_ticks = max(1, (y_max - y_min) // 10)
-    ax.ylim(y_min, y_max)
-    # plt.yticks(range(y_min, y_max, y_ticks), fontsize=14)
     for rank, column in enumerate(df.columns):
         y_pos = df[column].values[-1] - 0.5
         if colors.get(column) is None:
@@ -44,9 +39,9 @@ def dataframe_to_image(df: pd.DataFrame, image_filename: str, **kwargs) -> None:
                     linestyle='-',
                     color=colors.get(column))
             ax.text(df.index.max(), y_pos, column, fontsize=14, color=colors.get(column))
-    start_date = df.index.min().isoformat()[:10]
-    end_date = df.index.max().isoformat()[:10]
-    plt.title(f"{kwargs.get('graph_title', '')} {start_date} - {end_date}", fontsize=22)
+    # start_date = df.index.min().isoformat()[:10]
+    # end_date = df.index.max().isoformat()[:10]
+    plt.title(f"{kwargs.get('graph_title', '')}", fontsize=22)
 
     # plt.plot(df, lw=2.5, )
     plt.savefig(image_filename, bbox_inches="tight")

@@ -61,7 +61,7 @@ def generate_stock_report(stock: str, to_address: Tuple[str, str], **kwargs):
     df = get_data({stock}, start_date, end_date)
     df.dropna(inplace=True)
     rolling_bands_df = rolling_bands(df, column_name=stock)
-    title = f'{stock} report {start_date}-{end_date}'
+    title = f'{stock} report {start_date} - {end_date}'
     dataframe_to_image(rolling_bands_df, TMP_FILENAME,
                        graph_title=title,
                        colors={stock: 'blue', 'Lower': 'red', 'Upper': 'red'})
