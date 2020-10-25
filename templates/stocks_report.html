@@ -5,12 +5,17 @@
     </style>
 </head>
 <body>
-<div>
     {% for item in portfolio %}
+    <div>
         <h3>{{ item.title }} <b style="color:{{item.order_color}}">{{item.order}}</b></h3>
         <details>
+            <ul>
+                <li>Buy value: {{"${:,.2f}".format(item.buy_value)}}</li>
+                <li>Sell value: {{"${:,.2f}".format(item.sell_value)}}</li>
+            </ul>
             <img src="cid:{{item.attachment_number}}" width="400"/>
         </details>
+    </div>
+    <hr/>
     {% endfor %}
-</div>
 </body>

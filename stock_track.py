@@ -15,13 +15,15 @@ BUY_VALUE = 0.05  # 5% of lower bound or lower
 SELL_VALUE = 0.05  # 5% below upper bound or higher
 
 
-def get_order_for_vals(value: float, upper: float, lower: float) -> str:
+def get_order_for_vals(value: float, upper: float, lower: float) -> Tuple[str, float, float]:
+    buy_value = lower + BUY_VALUE * (upper - lower)
+    sell_value = upper - SELL_VALUE * (upper - lower)
     order = 'Hold'
-    if value <= lower + BUY_VALUE * (upper - lower):
+    if value <= buy_value:
         order = 'Buy'
-    if value >= upper - SELL_VALUE * (upper - lower):
+    if value >= sell_value:
         order = 'Sell'
-    return order
+    return order, buy_value, sell_value
 
 
 def generate_report_html(start_date, end_date, portfolio, **kwargs):
@@ -68,9 +70,10 @@ def generate_stock_report(stocks: List[str], **kwargs):
         df = analytics.get_data({stock}, start_date, end_date)
         df.dropna(inplace=True)
         rolling_bands_df = analytics.rolling_bands(df, column_name=stock)
-        order = get_order_for_vals(rolling_bands_df.tail(1)[stock][0],
-                                   rolling_bands_df.tail(1)['Upper'][0],
-                                   rolling_bands_df.tail(1)['Lower'][0])
+        order, buy_val, sell_val = get_order_for_vals(
+            rolling_bands_df.tail(1)[stock][0],
+            rolling_bands_df.tail(1)['Upper'][0],
+            rolling_bands_df.tail(1)['Lower'][0])
         should_send_report = should_send_report or (order != 'Hold')
         stock_title = f'{stock} report {start_date} - {end_date}'
         dataframe_to_image(rolling_bands_df, f'graph-{stock}.png',
@@ -79,6 +82,8 @@ def generate_stock_report(stocks: List[str], **kwargs):
         portfolio.append({
             'title': stock_title,
             'order': order,
+            'buy_value': buy_val,
+            'sell_value': sell_val,
             'order_color': 'blue',
             'attachment_number': len(attachments),
         })
