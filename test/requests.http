@@ -45,3 +45,19 @@ Content-Type: application/json
   "name": "first",
   "mix": "{\"FB\": 0.2, \"AMZN\": 0.2,\"GOOG\": 0.2,\"AAPL\": 0.2,\"TSLA\": 0.2}"
 }
+
+###
+POST http://localhost:5000/api/portfolio-report
+Content-Type: application/json
+
+{
+  "startDate": "2020-02-01",
+  "endDate": "2020-10-01",
+  "portfolio": [
+  {
+    "percentage": 1,
+    "symbol": "HSBC"
+  }
+]
+}
+###

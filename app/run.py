@@ -1,7 +1,7 @@
 import json
 import os
 from datetime import datetime, timedelta
-from typing import Dict
+from typing import Dict, List, Tuple
 
 from flask import Flask, request, abort
 
@@ -17,7 +17,7 @@ app = Flask(__name__,
 
 
 @app.route('/api/portfolio-report', methods=['POST'])
-def generate_portfolio():
+def portfolio_report():
     req_data = request.get_json()
     portfolio = [(item['percentage'], item['symbol'].upper()) for item in req_data['portfolio']]
     symbols = [item[1] for item in portfolio]
@@ -51,7 +51,7 @@ def get_all_symbols():
         df = df['Security Name']
         df.to_json(path_or_buf=PATH)
     all_symbols = json.load(open(PATH, 'r'))
-    query = request.args.get('q')
+    query = request.args.get('q', default='')
     if query is None or len(query) < 2:
         abort(404, 'At least 3 letters query required')
     query = query.lower()
@@ -61,14 +61,9 @@ def get_all_symbols():
     return res
 
 
-def _portfolio_validate(json: Dict):
-    pass
-
-
 @app.route('/api/portfolios', methods=['POST'])
 def portfolio_create():
     req_data = request.get_json()
-    _portfolio_validate(req_data)
     portfolio = Portfolio.create(req_data['name'], req_data['mix'])
     return portfolio.to_json()
 
@@ -81,7 +76,7 @@ def portfolio_detail(p_id: int):
 
 @app.route('/api/portfolios', methods=['GET'])
 def portfolio_list():
-    query = request.args.get('q') or ''
+    query = request.args.get('q', default='')
     portfolios = Portfolio.list(query)
     res = {'results': [p.to_json() for p in portfolios]}
     return res
