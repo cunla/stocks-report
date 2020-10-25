@@ -62,6 +62,7 @@ def generate_stock_report(stocks: List[str], **kwargs):
     start_date = datetime.today() - timedelta(days=90)
     start_date = start_date.strftime('%Y-%m-%d')
     start_date = kwargs.get('start_date', start_date)
+    should_send_report = False
     for stock in stocks:
         df = analytics.get_data({stock}, start_date, end_date)
         df.dropna(inplace=True)
@@ -69,6 +70,7 @@ def generate_stock_report(stocks: List[str], **kwargs):
         order = get_order_for_vals(rolling_bands_df.tail(1)[stock][0],
                                    rolling_bands_df.tail(1)['Upper'][0],
                                    rolling_bands_df.tail(1)['Lower'][0])
+        should_send_report = should_send_report or (order != 'Hold')
         stock_title = f'{stock} report {start_date} - {end_date}'
         dataframe_to_image(rolling_bands_df, f'graph-{stock}.png',
                            graph_title=stock_title,
@@ -83,7 +85,8 @@ def generate_stock_report(stocks: List[str], **kwargs):
     html = generate_report_html(portfolio=portfolio,
                                 start_date=start_date,
                                 end_date=end_date)
-    send_report(html, settings.REPORT_RECIPIENT, subject='Stocks tracking report', attachments=attachments)
+    if should_send_report:
+        send_report(html, settings.REPORT_RECIPIENT, subject='Stocks tracking report', attachments=attachments)
     for item in attachments:
         os.remove(item)
 
