@@ -10,6 +10,7 @@
         <h3>{{ item.title }} <b style="color:{{item.order_color}}">{{item.order}}</b></h3>
         <details>
             <ul>
+                <li>Current value: {{"${:,.2f}".format(item.curr_value)}}</li>
                 <li>Buy value: {{"${:,.2f}".format(item.buy_value)}}</li>
                 <li>Sell value: {{"${:,.2f}".format(item.sell_value)}}</li>
             </ul>
