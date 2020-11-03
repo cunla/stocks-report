@@ -18,7 +18,7 @@ app = Flask(__name__,
 
 def get_portfolio(portfolio_req):
     if isinstance(portfolio_req, dict):
-        return [(item[1], item[0].upper()) for item in portfolio_req]
+        return [(portfolio_req[k], k.upper()) for k in portfolio_req]
     if isinstance(portfolio_req, list):
         return [(item['percentage'], item['symbol'].upper()) for item in portfolio_req]
     return None

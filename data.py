@@ -8,13 +8,22 @@ from sqlalchemy import func
 from db import Session, StockValue, Stock
 
 
+def db_exists(session: Session, symbol: str, date: str):
+    query = session \
+        .query(StockValue.date, StockValue.adj_close.label(symbol)) \
+        .filter(StockValue.symbol == symbol, StockValue.date == date) \
+        .count()
+    return query > 0
+
+
 def update_db(df: pd.DataFrame, **kwargs):
     session = Session()
     columns = kwargs.get('columns', df.columns)
     for index, row in df.iterrows():
         for col in columns:
-            stock_value = StockValue(col, index, row[col])
-            session.add(stock_value)
+            if not db_exists(session, col, index):
+                stock_value = StockValue(col, index, row[col])
+                session.add(stock_value)
     session.commit()
     symbols_min_max = session \
         .query(StockValue.symbol, func.min(StockValue.date), func.max(StockValue.date)) \
