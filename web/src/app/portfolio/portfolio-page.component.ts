@@ -3,10 +3,10 @@ import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-folder',
-  templateUrl: './folder.page.html',
-  styleUrls: ['./folder.page.scss'],
+  templateUrl: './portfolio-page.component.html',
+  styleUrls: ['./portfolio-page.component.scss'],
 })
-export class FolderPage implements OnInit {
+export class PortfolioPage implements OnInit {
   public folder: string;
 
   constructor(private activatedRoute: ActivatedRoute) { }

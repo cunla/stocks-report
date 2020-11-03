@@ -16,10 +16,18 @@ app = Flask(__name__,
             static_folder='web')
 
 
+def get_portfolio(portfolio_req):
+    if isinstance(portfolio_req, dict):
+        return [(item[1], item[0].upper()) for item in portfolio_req]
+    if isinstance(portfolio_req, list):
+        return [(item['percentage'], item['symbol'].upper()) for item in portfolio_req]
+    return None
+
+
 @app.route('/api/portfolio-report', methods=['POST'])
 def portfolio_report():
     req_data = request.get_json()
-    portfolio = [(item['percentage'], item['symbol'].upper()) for item in req_data['portfolio']]
+    portfolio = get_portfolio(req_data['portfolio'])
     symbols = [item[1] for item in portfolio]
     if len(set(symbols)) != len(symbols):
         abort(400, 'Portfolio has same symbol multiple times')
