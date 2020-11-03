@@ -51,7 +51,7 @@ def portfolio_report():
 
 @app.route('/api/symbols', methods=['GET'])
 def get_all_symbols():
-    PATH = '../web/symbols.json'
+    PATH = './web/symbols.json'
     last_good_date = datetime.now() - timedelta(days=1)
     if not os.path.exists(PATH) \
             or datetime.fromtimestamp(os.path.getmtime(PATH)) < last_good_date:

@@ -5,7 +5,9 @@ import {HttpClientModule} from "@angular/common/http";
 
 @NgModule({
     entryComponents: [],
-    imports: [HttpClientModule,],
+    imports: [
+        HttpClientModule,
+    ],
     providers: [
         PortfolioService,
     ]

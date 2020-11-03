@@ -3,9 +3,9 @@ import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 
 
-const PORTFOLIO_API = '/api/portfolios/';
-const PORTFOLIO_REPORT_API = '/api/portfolio-report/';
-const SYMBOLS_API = '/api/symbols/';
+const PORTFOLIO_API = '/api/portfolios';
+const PORTFOLIO_REPORT_API = '/api/portfolio-report';
+const SYMBOLS_API = '/api/symbols';
 
 @Injectable({
     providedIn: 'root'
