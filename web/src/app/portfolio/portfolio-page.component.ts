@@ -22,7 +22,8 @@ export interface PortfolioResult {
     styleUrls: ['./portfolio-page.component.scss'],
 })
 export class PortfolioPage implements OnInit {
-    public id: string;
+    private id: string;
+    public title: string;
     isDataLoaded = false;
     Highcharts: typeof Highcharts = Highcharts;
     chartOptions: Highcharts.Options = {
@@ -53,8 +54,9 @@ export class PortfolioPage implements OnInit {
         portfolio[this.id] = 1;
         this.portfolioService.getSymbols(this.id)
             .subscribe((res) => {
-                this.chartOptions.title.text = `${res[this.id]} (${this.id})`;
-            })
+                this.title = `${res[this.id]} (${this.id})`;
+                this.chartOptions.title.text = this.title;
+            });
         this.portfolioService.portfolioReport(startDate, endDate, portfolio)
             .subscribe((res: PortfolioResult) => {
                 this.chartOptions.data.csv = res.csv;

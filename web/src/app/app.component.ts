@@ -10,15 +10,6 @@ import {StatusBar} from '@ionic-native/status-bar/ngx';
     styleUrls: ['app.component.scss']
 })
 export class AppComponent implements OnInit {
-    public selectedIndex = 0;
-    public appPages = [
-        {
-            title: 'HSBC',
-            url: '/stock/HSBC',
-            icon: 'mail'
-        },
-    ];
-    public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
 
     constructor(
         private platform: Platform,
@@ -35,8 +26,6 @@ export class AppComponent implements OnInit {
         });
     }
 
-    ngOnInit() {
-        const path = window.location.pathname;
-        this.selectedIndex = this.appPages.findIndex(page => page.url.toLowerCase() === path.toLowerCase());
+    ngOnInit(): void {
     }
 }
