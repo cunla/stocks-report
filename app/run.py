@@ -1,13 +1,12 @@
 import json
 import os
 from datetime import datetime, timedelta
-from typing import Dict, List, Tuple
 
+import pandas_datareader as pdr
 from flask import Flask, request, abort
 
 from db import Portfolio
 from report_gen import generate_portfolio_report_csv
-import pandas_datareader as pdr
 
 DATE_FORMAT = '%Y-%m-%d'
 
@@ -31,8 +30,7 @@ def portfolio_report():
     symbols = [item[1] for item in portfolio]
     if len(set(symbols)) != len(symbols):
         abort(400, 'Portfolio has same symbol multiple times')
-    portfolio_sum = sum(item[0] for item in portfolio)
-    if portfolio_sum != 1.0:
+    if any(item[0] != int(item[0]) for item in portfolio) and sum(item[0] for item in portfolio) != 1.0:
         abort(400, 'Portfolio percentage do not sum to 100%')
     end_date = datetime.today().date()
     if 'endDate' in req_data:

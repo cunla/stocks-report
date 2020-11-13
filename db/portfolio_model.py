@@ -31,15 +31,9 @@ class Portfolio(Base):
 
     def _validate(self, mix_str: str):
         mix = json.loads(mix_str)
-        symbols = [k for k in mix]
-        percentages = mix.values()
-        # if len(percentages) != len(symbols):
-        #     raise ValueError(f"Length of percentages list is {len(percentages)}"
-        #                      f" while length of symbols is {len(symbols)}")
-        # if len(set(symbols)) != len(symbols):
-        #     raise ValueError("A portfolio can't contain the same symbol multiple times")
-        if sum(percentages) != 1.0:
-            raise ValueError(f"Some of percentages should be 1.0 but is {sum(percentages)}")
+        values = mix.values()
+        if any(val != int(val) for val in values) and sum(values) != 1.0:
+            raise ValueError(f"Some of percentages should be 1.0 but is {sum(values)}")
 
     @property
     def mix(self):
