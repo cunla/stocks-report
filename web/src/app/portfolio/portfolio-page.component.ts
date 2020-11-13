@@ -1,10 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {PortfolioService} from "../services/portfolio.service";
-import {DateTime} from "luxon";
+import {PortfolioService} from '../services/portfolio.service';
+import {DateTime} from 'luxon';
 import * as Highcharts from 'highcharts';
 import HC_data from 'highcharts/modules/data';
 import theme from 'highcharts/themes/dark-unica';
+import {LoadingController} from '@ionic/angular';
 
 HC_data(Highcharts);
 theme(Highcharts);
@@ -22,7 +23,7 @@ export interface PortfolioResult {
     styleUrls: ['./portfolio-page.component.scss'],
 })
 export class PortfolioPage implements OnInit {
-    private id: string;
+    private id;
     public title: string;
     isDataLoaded = false;
     Highcharts: typeof Highcharts = Highcharts;
@@ -42,26 +43,48 @@ export class PortfolioPage implements OnInit {
 
     constructor(
         private activatedRoute: ActivatedRoute,
-        private portfolioService: PortfolioService,) {
+        private portfolioService: PortfolioService,
+        private loadingController: LoadingController,) {
 
     }
 
-    ngOnInit() {
-        this.id = this.activatedRoute.snapshot.paramMap.get('id').toUpperCase();
+    async ngOnInit() {
         const startDate = DateTime.local().minus({days: 90}).toISODate();
         const endDate = DateTime.local().toISODate();
-        const portfolio = {};
-        portfolio[this.id] = 1;
-        this.portfolioService.getSymbols(this.id)
-            .subscribe((res) => {
-                this.title = `${res[this.id]} (${this.id})`;
+        const id = this.activatedRoute.snapshot.paramMap.get('id').toUpperCase();
+        const loading = await this.loadingController.create({
+            message: 'Please wait...',
+        });
+        loading.present();
+        if (isNaN(+id)) { // One symbol
+            this.id = id;
+            const portfolio = {};
+            portfolio[this.id] = 1;
+            this.portfolioService.getSymbols(this.id)
+                .subscribe((res) => {
+                    this.title = `${res[this.id]} (${this.id})`;
+                    this.chartOptions.title.text = this.title;
+                });
+            this.portfolioService.portfolioReport(startDate, endDate, portfolio)
+                .subscribe((res: PortfolioResult) => {
+                    this.chartOptions.data.csv = res.csv;
+                    this.isDataLoaded = true;
+                    loading.dismiss();
+                });
+        } else { // Portfolio id number
+            this.id = +id;
+            this.portfolioService.getPortfolio(this.id).subscribe((portfolio) => {
+                this.title = `${portfolio.name} `;
                 this.chartOptions.title.text = this.title;
+                this.portfolioService.portfolioReport(startDate, endDate, portfolio.mix)
+                    .subscribe((res: PortfolioResult) => {
+                        this.chartOptions.data.csv = res.csv;
+                        this.isDataLoaded = true;
+                        loading.dismiss();
+                    });
             });
-        this.portfolioService.portfolioReport(startDate, endDate, portfolio)
-            .subscribe((res: PortfolioResult) => {
-                this.chartOptions.data.csv = res.csv;
-                this.isDataLoaded = true;
-            });
+        }
+
     }
 
 }

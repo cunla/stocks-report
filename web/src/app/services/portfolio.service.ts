@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {Observable} from "rxjs";
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
 
 
 const PORTFOLIO_API = '/api/portfolios';
@@ -20,11 +20,16 @@ export class PortfolioService {
         return this.http.get(`${PORTFOLIO_API}?q=${q}`);
     }
 
+    public getPortfolio(id: number): Observable<any> {
+        return this.http.get(`${PORTFOLIO_API}/${id}`);
+    }
+
+
     public postPortfolio(name: string, mix: any): Observable<any> {
         const body = {
-            name: name,
-            mix: mix,
-        }
+            name,
+            mix,
+        };
         return this.http.post(`${PORTFOLIO_API}`, body);
     }
 
@@ -36,10 +41,10 @@ export class PortfolioService {
                            endDate: string,
                            portfolio: any) {
         const body = {
-            startDate: startDate,
-            endDate: endDate,
-            portfolio: portfolio,
-        }
+            startDate,
+            endDate,
+            portfolio,
+        };
         return this.http.post(`${PORTFOLIO_REPORT_API}`, body);
     }
 

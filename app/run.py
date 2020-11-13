@@ -77,6 +77,8 @@ def portfolio_create():
 @app.route('/api/portfolios/<int:p_id>', methods=['GET'])
 def portfolio_detail(p_id: int):
     portfolio = Portfolio.get(p_id)
+    if portfolio is None:
+        abort(404, 'Portfolio not found')
     return portfolio.to_json()
 
 
