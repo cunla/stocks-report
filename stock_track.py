@@ -43,7 +43,7 @@ def generate_report_html(start_date, end_date, portfolio, **kwargs):
     return html
 
 
-def send_report(content: str, to: Tuple[str, str], attachments: List[str],
+def send_report(content: str, to: List[Tuple[str, str]], attachments: List[str],
                 **kwargs):
     """
 

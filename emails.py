@@ -25,19 +25,24 @@ class EmailSender(object):
         # self._server.set_debuglevel(1)
         self._server.login(user, password)
 
-    def send_email(self, from_addr: Tuple[str, str], to_addr: Tuple[str, str], subject: str, html: str,
+    def send_email(self, from_addr: Tuple[str, str],
+                   to_addr: List[Tuple[str, str]],
+                   subject: str, html: str,
                    attachments: List[str] = []):
         """
         Send an email
         :param from_addr: Tuple of (sender name, sender email)
-        :param to_addr: Tuple of (receiver name, receiver email)
+        :param to_addr: List of Tuple of (receiver name, receiver email)
         :param subject: Email subject
         :param html: html text of email
         :param attachments: List of attachments to include in email
         """
         msg = MIMEMultipart()
         msg['From'] = EmailSender._re_format_addr('%s <%s>' % (from_addr[0], from_addr[1]))
-        msg['To'] = EmailSender._re_format_addr('%s <%s>' % (to_addr[0], to_addr[1]))
+        msg['To'] = ','.join(
+            EmailSender._re_format_addr('%s <%s>' % (item[0], item[1]))
+            for item in to_addr
+        )
         msg['Subject'] = Header(subject, 'utf-8').encode()
 
         html_part = MIMEText(html, 'html', 'utf-8')
@@ -53,7 +58,8 @@ class EmailSender(object):
                 mime.set_payload(f.read())
             encoders.encode_base64(mime)
             msg.attach(mime)
-        self._server.sendmail(from_addr[1], to_addr[1], msg.as_string())
+        addresses = [item[1] for item in to_addr]
+        self._server.sendmail(from_addr[1], addresses, msg.as_string())
 
     def close(self):
         self._server.close()
@@ -95,6 +101,8 @@ if __name__ == '__main__':
     html_template = template_env.get_template(settings.REPORT_TEMPLATE)
     html = html_template.render()
     email_sender.send_email(("a", "a@gmail.com"),
-                            ("b", "style.daniel@gmail.com"),
+                            [("b", "style.daniel@gmail.com"),
+                             ("c", "style.d+aniel@gmail.com"),
+                             ("d", "style.da+niel@gmail.com"),],
                             "subject",
                             html)
