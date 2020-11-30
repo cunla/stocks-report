@@ -17,7 +17,6 @@ REPORT_SENDER = ("Stocks-report", "a@gmail.com")
 REPORT_SUBJECT = 'Report on stocks:'
 # Report recipient name and email address
 REPORT_RECIPIENT = [("Daniel", "style.daniel@gmail.com"),
-                    ("Diego", "diegolweiss@gmail.com"),
                     ]
 
 # Report template

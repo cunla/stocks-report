@@ -12,7 +12,17 @@ DATE_FORMAT = '%Y-%m-%d'
 
 app = Flask(__name__,
             static_url_path='',
-            static_folder='web')
+            static_folder='../web/www')
+
+
+@app.route('/')
+def root():
+    return app.send_static_file('index.html')
+
+
+@app.route('/stock/<path:path>')
+def static_file(path):
+    return app.send_static_file('index.html')
 
 
 def get_portfolio(portfolio_req):
