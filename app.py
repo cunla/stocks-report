@@ -12,7 +12,7 @@ DATE_FORMAT = '%Y-%m-%d'
 
 app = Flask(__name__,
             static_url_path='',
-            static_folder='../web/www')
+            static_folder='./web/www')
 
 
 @app.route('/')
