@@ -1,9 +1,11 @@
+import argparse
+import logging
 import os
 from datetime import datetime, timedelta
 from typing import Tuple, List, Dict
+
 import jinja2
-import argparse
-import logging
+
 import analytics
 import settings
 from emails import EmailSender
@@ -70,7 +72,7 @@ def generate_stock_report(stocks: List[str], **kwargs):
     start_date = datetime.today() - timedelta(days=90)
     start_date = start_date.strftime('%Y-%m-%d')
     start_date = kwargs.get('start_date', start_date)
-    should_send_report = False
+    should_send_report = kwargs.get('send_report', False)
     for stock in stocks:
         df = analytics.get_data({stock}, start_date, end_date)
         df.dropna(inplace=True)
@@ -101,6 +103,9 @@ def parse_args():
     parser.add_argument('-s', '--stocks', dest='stocks', nargs='+',
                         required=True,
                         help='Stocks to track')
+    parser.add_argument('--send-report', dest='send_report',
+                        required=False, action='store_true',
+                        help='Send report')
     res = parser.parse_args()
     logger.debug(f'args {res}')
     return res
@@ -109,4 +114,4 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     stocks = [i.upper() for i in args.stocks]
-    generate_stock_report(stocks)
+    generate_stock_report(stocks, send_report=args.send_report)
