@@ -25,6 +25,7 @@
     "@ionic/angular": "^5.5.2",
     "highcharts": "^8.2.2",
     "highcharts-angular": "^2.9.0",
+    "ionic4-auto-complete": "^2.9.4",
     "luxon": "^1.25.0",
     "rxjs": "~6.6.3",
     "tslib": "^2.1.0",

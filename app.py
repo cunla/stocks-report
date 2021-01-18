@@ -3,7 +3,7 @@ import os
 from datetime import datetime, timedelta
 
 import pandas_datareader as pdr
-from flask import Flask, request, abort
+from flask import Flask, request, abort, Response
 
 from db import Portfolio
 from report_gen import generate_portfolio_report_csv
@@ -57,8 +57,7 @@ def portfolio_report():
     }
 
 
-@app.route('/api/symbols', methods=['GET'])
-def get_all_symbols():
+def get_symbols(query: str) -> dict[str, str]:
     PATH = './web/symbols.json'
     last_good_date = datetime.now() - timedelta(days=1)
     if not os.path.exists(PATH) \
@@ -67,14 +66,29 @@ def get_all_symbols():
         df = df['Security Name']
         df.to_json(path_or_buf=PATH)
     all_symbols = json.load(open(PATH, 'r'))
-    query = request.args.get('q', default='')
-    if query is None or len(query) < 2:
-        abort(404, 'At least 3 letters query required')
     query = query.lower()
     res = {k: all_symbols[k]
            for k in all_symbols
            if query in k.lower() or query in all_symbols[k].lower()}
     return res
+
+
+@app.route('/api/symbols', methods=['GET'])
+def get_all_symbols():
+    query = request.args.get('q', default='')
+    if query is None or len(query) < 2:
+        abort(404, 'At least 2 letters query required')
+    return get_symbols(query)
+
+
+@app.route('/api/symbols-list', methods=['GET'])
+def get_symbols_list():
+    query = request.args.get('q', default='')
+    if query is None or len(query) < 2:
+        abort(404, 'At least 2 letters query required')
+    res_dict = get_symbols(query)
+    res_list = list({'symbol': k, 'name': res_dict[k]} for k in res_dict)
+    return Response(json.dumps(res_list), mimetype='application/json')
 
 
 @app.route('/api/portfolios', methods=['POST'])

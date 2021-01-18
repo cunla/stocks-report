@@ -4,6 +4,8 @@ import {MenuComponent} from "./menu.component";
 import {StocksListComponent} from "./stocks-list/stocks-list.component";
 import {IonicModule} from "@ionic/angular";
 import {RouterModule} from "@angular/router";
+import {AutoCompleteModule} from "ionic4-auto-complete";
+import {StocksAutocompleteService} from "./stocks.autocomplete.service";
 
 
 @NgModule({
@@ -14,11 +16,13 @@ import {RouterModule} from "@angular/router";
     imports: [
         CommonModule,
         IonicModule,
-        RouterModule
+        RouterModule,
+        AutoCompleteModule,
     ],
-    exports:[
-      MenuComponent,
+    exports: [
+        MenuComponent,
     ],
+    providers: [StocksAutocompleteService,],
 })
 export class MenuModule {
 }

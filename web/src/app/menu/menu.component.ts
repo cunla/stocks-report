@@ -1,4 +1,7 @@
 import {Component, OnInit} from '@angular/core';
+import {StocksAutocompleteService} from "./stocks.autocomplete.service";
+import {Router} from "@angular/router";
+import {MenuController} from "@ionic/angular";
 
 @Component({
     selector: 'app-menu',
@@ -16,7 +19,9 @@ export class MenuComponent implements OnInit {
     ];
     public labels = ['HSBC', 'AAPL', 'TSLA', 'VYMI', 'AMZN'];
 
-    constructor() {
+    constructor(private menu: MenuController,
+                private router: Router,
+                public stocksService: StocksAutocompleteService,) {
     }
 
     ngOnInit() {
@@ -24,4 +29,9 @@ export class MenuComponent implements OnInit {
         this.selectedIndex = this.appPages.findIndex(page => page.url.toLowerCase() === path.toLowerCase());
     }
 
+    itemSelected(stock: any) {
+        this.labels.push(stock.symbol);
+        this.menu.close().then();
+        this.router.navigateByUrl(`/stock/${stock.symbol}`).then();
+    }
 }
