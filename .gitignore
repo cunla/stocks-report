@@ -130,6 +130,6 @@ dmypy.json
 .idea
 graph.png
 stocks.csv
-secrets.py
+smtp_secrets.py
 db.sqlite
 web/symbols.json

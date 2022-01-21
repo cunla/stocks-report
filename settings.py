@@ -2,7 +2,7 @@
 # SMTP_SERVER_USER = "xxx"
 # SMTP_SERVER_PASSWORD = "xxx"
 
-from secrets import *
+from smtp_secrets import *
 
 # Number of months to include in the report
 NUMBER_OF_MONTHS = 24
