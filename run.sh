@@ -1,4 +1,4 @@
 #!/bin/sh
-cd ~/projects/stocks-report
+cd ~/PycharmProjects/stocks-report || exit
 source env/bin/activate
-python stock_track.py -s hsbc amzn vymi
+python stock_track.py --send-report -s vdy.to hdiv.to amzn vymi
