@@ -1,0 +1,32 @@
+name: Unit tests
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '0 1 * * *'
+
+jobs:
+  send-report:
+    name: 'Sending stocks report'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ['3.10']
+    env:
+      SMTP_SERVER_PASSWORD: ${{ secrets.SMTP_SERVER_PASSWORD }}
+      SMTP_SERVER_USER: ${{ secrets.SMTP_SERVER_USER }}
+      STOCKS: ${{ secrets.STOCKS }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          cache-dependency-path: requirements.txt
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip --quiet install -r requirements.txt
+      - name: Send stocks report
+        run: |
+          python stock_track.py --send-report -s ${{ env.STOCKS }}
+
