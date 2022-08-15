@@ -1,9 +1,15 @@
-# Import from secrets.py
-# SMTP_SERVER_USER = "xxx"
-# SMTP_SERVER_PASSWORD = "xxx"
+import os
 
-from smtp_secrets import *
+from dotenv import load_dotenv
 
+load_dotenv()  # take environment variables from .env.
+
+SMTP_SERVER_USER = os.getenv('SMTP_SERVER_USER', None)
+SMTP_SERVER_PASSWORD = os.getenv('SMTP_SERVER_PASSWORD', None)
+
+if not SMTP_SERVER_USER or not SMTP_SERVER_PASSWORD:
+    print('SMTP_SERVER_USER not set, exiting')
+    exit(1)
 # Number of months to include in the report
 NUMBER_OF_MONTHS = 24
 

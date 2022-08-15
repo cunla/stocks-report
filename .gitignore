@@ -133,3 +133,4 @@ stocks.csv
 smtp_secrets.py
 db.sqlite
 web/symbols.json
+.angular/
