@@ -1,4 +1,4 @@
-name: Unit tests
+name: Sending stocks report
 
 on:
   workflow_dispatch:
