@@ -3,7 +3,7 @@ import {map} from 'rxjs/operators';
 
 import {HttpClient} from '@angular/common/http';
 
-import {AutoCompleteService} from 'ionic4-auto-complete';
+import {AutoCompleteService} from '../autocomplete/auto-complete.service';
 
 const SYMBOLS_API = '/api/symbols-list';
 

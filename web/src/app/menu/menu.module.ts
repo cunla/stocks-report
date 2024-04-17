@@ -4,7 +4,7 @@ import {MenuComponent} from "./menu.component";
 import {StocksListComponent} from "./stocks-list/stocks-list.component";
 import {IonicModule} from "@ionic/angular";
 import {RouterModule} from "@angular/router";
-import {AutoCompleteModule} from "ionic4-auto-complete";
+import {AutoCompleteModule} from "../autocomplete/autocomplete.module";
 import {StocksAutocompleteService} from "./stocks.autocomplete.service";
 
 
